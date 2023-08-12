@@ -438,6 +438,7 @@ class SequenceLabeler(BaseModel):
         per_token=False,
         context=None,
         return_negative_confidence=False,
+        spans=None,
         **kwargs
     ):
         """
@@ -453,13 +454,16 @@ class SequenceLabeler(BaseModel):
             # rejoin the labels after prediction
             X, split_indices = self._pre_chunk_document(X)
 
-        preds = super().predict(
-            X,
-            per_token=per_token,
-            context=context,
-            return_negative_confidence=return_negative_confidence,
-            **kwargs
-        )
+        if spans is not None:
+            preds = self._predict_spans(X, spans, context=context, **kwargs)
+        else:
+            preds = super().predict(
+                X,
+                per_token=per_token,
+                context=context,
+                return_negative_confidence=return_negative_confidence,
+                **kwargs
+            )
 
         if self.config.max_document_chars:
             preds = self._merge_chunked_preds(
@@ -468,10 +472,17 @@ class SequenceLabeler(BaseModel):
 
         return preds
 
+    def _predict_spans(self, zipped_data, spans, **kwargs):
+        # Implement the logic for making predictions on the provided spans.
+        pass
+    
     def _predict(
-        self, zipped_data, per_token=False, return_negative_confidence=False, **kwargs
+        self, zipped_data, per_token=False, return_negative_confidence=False, spans=None, **kwargs
     ):
-        predictions = self.process_long_sequence(zipped_data, **kwargs)
+        if spans is not None:
+            predictions = self._predict_spans(zipped_data, spans, **kwargs)
+        else:
+            predictions = self.process_long_sequence(zipped_data, **kwargs)
         return self._predict_decode(
             zipped_data,
             predictions,
