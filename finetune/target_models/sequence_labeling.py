@@ -472,11 +472,15 @@ class SequenceLabeler(BaseModel):
 
         return preds
 
+    def _predict_spans(self, zipped_data, spans, **kwargs):
+        # Implement the logic for making predictions on the provided spans.
+        pass
+    
     def _predict(
         self, zipped_data, per_token=False, return_negative_confidence=False, spans=None, **kwargs
     ):
         if spans is not None:
-            predictions = self.process_spans(zipped_data, spans, **kwargs)
+            predictions = self._predict_spans(zipped_data, spans, **kwargs)
         else:
             predictions = self.process_long_sequence(zipped_data, **kwargs)
         return self._predict_decode(
@@ -493,7 +497,6 @@ class SequenceLabeler(BaseModel):
         predictions,
         per_token=False,
         return_negative_confidence=False,
-        spans=None,
         **kwargs
     ):
         """
