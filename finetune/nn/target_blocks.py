@@ -412,6 +412,7 @@ def sequence_labeler(
     reuse=None,
     lengths=None,
     use_crf=True,
+    spans=None,
     **kwargs
 ):
     """
@@ -588,14 +589,19 @@ def sequence_labeler(
                             targets, logits, weights=weights
                         )
 
-        return {
-            "logits": logits,
-            "losses": loss,
-            "predict_params": {
-                "transition_matrix": transition_params,
-                "sequence_length": lengths,
-            },
-        }
+        if spans is not None:
+            # Make predictions only for the provided spans
+            # Implementation here
+            pass
+        else:
+            return {
+                "logits": logits,
+                "losses": loss,
+                "predict_params": {
+                    "transition_matrix": transition_params,
+                    "sequence_length": lengths,
+                },
+            }
 
 
 def association(
